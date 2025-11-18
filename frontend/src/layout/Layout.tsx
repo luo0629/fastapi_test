@@ -61,7 +61,7 @@ export function Layout() {
 
             <SignedIn>
                 {/* 如果用户已登录，则渲染子路由组件 */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+                <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
                     <Outlet />
                 </div>
             </SignedIn>
