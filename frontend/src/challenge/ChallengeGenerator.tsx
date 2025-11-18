@@ -1,6 +1,6 @@
 import "react";
 import { useState,useEffect } from "react";
-import { MAQChallenge } from "./MCQChallenge";
+import { MCQChallenge } from "./MCQChallenge";
 //用户挑战表单
 export function ChallengeGenerator() {
     const[challenge,setChallenge]=useState(null);
