@@ -41,3 +41,31 @@ def reset_quota_if_needed(db: Session, quota: models.ChallengeQuota):
         db.refresh(quota)
     # 返回更新后的配额对象
     return quota
+
+#创建挑战
+def create_challenge(
+        db:Session,
+        difficulty:str,
+        created_by:str,
+        title:str,
+        options:str,
+        correct_answer_id:int,
+        explanation:str):
+    #创建challenge模型实例
+    db_challenge=models.Challenge(
+        difficulty=difficulty,
+        created_by=created_by,
+        title=title,
+        options=options,
+        correct_answer_id=correct_answer_id,
+        explanation=explanation)
+    db.add(db_challenge)
+    db.commit()
+    db.refresh(db_challenge)
+    return db_challenge
+
+
+#获取用户对应相关的所有挑战
+def get_user_challenges(db:Session,user_id:str):
+    user_challenges=db.query(models.Challenge).filter(models.Challenge.created_by==user_id).all()
+    return user_challenges
