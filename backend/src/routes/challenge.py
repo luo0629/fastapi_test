@@ -5,6 +5,7 @@ from ..database.db import(get_challenge_quota,get_user_challenges,create_challen
 
 from ..utils import authenticate_and_get_user_details
 from ..database.models import get_db
+from ..ai_generator import generate_challenge_with_ai
 import json
 from datetime import datetime
 
@@ -43,14 +44,24 @@ async def generate_challenge(request:ChallengeRequest,db:Session=Depends(get_db)
         if quota.quota_remaining<=0:
             raise HTTPException(status_code=429,detail="Quota exhausted")
 
-        challenge_data=None
+        challenge_data=generate_challenge_with_ai(request.difficulty)
 
-        #TODO:生成挑战
+        #创建新的挑战实例
+        new_challenge=create_challenge(db,request.difficulty,user_id,**challenge_data)
 
         quota.quota_remaining-=1
         db.commit()
-
-        return challenge_data   
+        #返回自定义响应字典
+        return   {
+            "id":new_challenge.id,
+            "difficulty":request.difficulty,
+            "title":new_challenge.title,
+            "options":json.loads(new_challenge.options),
+            "correct_answer_id":new_challenge.correct_answer_id,
+            "explanation":new_challenge.explanation,
+            "timestamp":new_challenge.date_created.isoformat()
+            
+        }
 
     except Exception as e:
         raise HTTPException(status_code=400,detail=str(e))
