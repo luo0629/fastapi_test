@@ -1,5 +1,5 @@
 import "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./MCQChallenge.css";
 import type { Challenge } from "../utils/types";
 
@@ -16,6 +16,12 @@ export function MCQChallenge({challenge,showExplanation=false}:MCQChallengeProps
     const [selectedOptions,setSelectedOptions]=useState<null|number>(null);
     //是否显示解释
     const [shouldShowExplanation,setShouldShowExplanation]=useState<boolean>(showExplanation);
+
+    //当challenge数据变化时重置选择状态
+    useEffect(() => {
+        setSelectedOptions(null);
+        setShouldShowExplanation(showExplanation);
+    }, [challenge, showExplanation]);
 
     //去报选项使用的是JSON形式
     const options=typeof challenge.options==="string"?JSON.parse(challenge.options):challenge.options;

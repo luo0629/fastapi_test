@@ -5,8 +5,10 @@ backend/.venv/
 backend/uv.lock
 backend/.python-version
 backend/pyproject.toml
+/backend/database.db
 data/ 
 frontend/node_modules
 .claude
 **/__pycache__/
 *.pyc
+/backend/.env
