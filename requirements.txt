@@ -1,0 +1,34 @@
+# Backend Python Dependencies
+# ====================================
+
+# Core Web Framework
+fastapi>=0.121.2
+uvicorn>=0.38.0
+
+# Database & ORM
+sqlalchemy>=2.0.44
+
+# Authentication & API Services
+clerk-backend-api>=4.0.0
+svix>=1.81.0
+
+# AI Integration
+openai>=2.8.0
+
+# Environment Configuration
+python-dotenv>=1.2.1
+
+# Development Dependencies (optional)
+# ====================================
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0
+# black>=23.0.0
+# flake8>=6.0.0
+# mypy>=1.0.0
+
+# Additional utilities that might be needed:
+# requests>=2.28.0          # HTTP client library
+# pydantic>=2.0.0          # Data validation (comes with FastAPI)
+# python-multipart>=0.0.6  # Form data handling
+# jinja2>=3.1.0            # Template engine
+# alembic>=1.10.0          # Database migrations
