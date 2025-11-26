@@ -30,11 +30,11 @@ def reset_quota_if_needed(db: Session, quota: models.ChallengeQuota):
     # 获取当前的时间
     now_time = datetime.now()
     # 检查上次重置时间与当前时间的差值是否超过 24 小时
-    if now_time - quota.last_reasert_date > timedelta(hours=24):
+    if now_time - quota.last_reset_date > timedelta(hours=24):
         # 如果超过 24 小时，重置配额为 10
         quota.quota_remaining = 10
         # 更新最后重置时间为当前时间
-        quota.last_reasert_date = now_time
+        quota.last_reset_date = now_time
         # 提交事务，保存更新的配额信息
         db.commit()
         # 刷新对象，以确保获取数据库中最新的配额数据

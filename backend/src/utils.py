@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 创建 Clerk SDK 实例，通过 API 密钥进行初始化
-clerk_sdk = Clerk(api_key=os.getenv("CLERK_API_KEY"))
+clerk_sdk = Clerk(bearer_auth=os.getenv("CLERK_API_KEY"))
 
 def authenticate_and_get_user_details(request):
     try:
@@ -26,8 +26,11 @@ def authenticate_and_get_user_details(request):
         # jwt_key 用于验证 JWT 令牌的有效性
         request_state = clerk_sdk.authenticate_request(
             request,
-            AuthenticateRequestOptions=["http://localhost:5173"],  # 允许的请求来源
-            jwt_key=os.getenv("JWT_KEY")  # 从环境变量中获取 JWT 密钥
+            AuthenticateRequestOptions(
+                authorized_parties=["http://localhost:5173"],
+                jwt_key=os.getenv("JWT_KEY")  # 从环境变量中获取 JWT 密钥
+            ),  # 允许的请求来源
+            
         )
         
         # 如果请求未通过身份验证（即未登录），返回 401 错误

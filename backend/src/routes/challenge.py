@@ -12,7 +12,7 @@ from datetime import datetime
 router=APIRouter()
 
 
-# 定义一个 Pydantic 模型，用于接收创建或查询 Challenge 的请求数据
+# 定义一个 Pydantic 模型，用于接收创建或查询 Challenge 的请求数据  这个是用户希望获得的数据
 class ChallengeRequest(BaseModel):
     # 定义字段 difficulty，类型为字符串
     difficulty: str  
@@ -30,10 +30,10 @@ class ChallengeRequest(BaseModel):
 
 
 #生成挑战的接口
-@router.post("/generate-challenge")
-async def generate_challenge(request:ChallengeRequest,db:Session=Depends(get_db)):
+@router.post("/generate-challenge")                 #是Request类型中才含有请求头、授权令牌等内容的请求对象 标准的请求头
+async def generate_challenge(request:ChallengeRequest,request_obj:Request,db:Session=Depends(get_db)):
     try:
-        user_details=authenticate_and_get_user_details(request)
+        user_details=authenticate_and_get_user_details(request_obj)
         user_id=user_details.get('user_id') 
 
         quota=get_challenge_quota(db,user_id)
@@ -47,7 +47,11 @@ async def generate_challenge(request:ChallengeRequest,db:Session=Depends(get_db)
         challenge_data=generate_challenge_with_ai(request.difficulty)
 
         #创建新的挑战实例
-        new_challenge=create_challenge(db,request.difficulty,user_id,**challenge_data)
+        new_challenge=create_challenge(db,request.difficulty,user_id,
+                                       title=challenge_data['title'],
+                                       options=json.dumps(challenge_data['options']),
+                                       correct_answer_id=challenge_data['correct_answer_id'],
+                                       explanation=challenge_data['explanation'])
 
         quota.quota_remaining-=1
         db.commit()
@@ -86,7 +90,7 @@ async def get_quota(request:Request,db:Session=Depends(get_db)):
     if not quota:
         return{"user_id":user_id,
                "quota_remaining":0,
-               "last_reset_time":datetime.now()}
+               "last_reset_date":datetime.now()}
     
     quota=reset_quota_if_needed(db,quota)
     return quota

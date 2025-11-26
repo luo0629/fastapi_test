@@ -2,12 +2,13 @@ import "react";
 import { useState,useEffect } from "react";
 import { MCQChallenge } from "../challenge/MCQChallenge";
 import "./HistoryPanel.css";
+import { api } from "../utils/api";
 
 export function HistoryPanel() {
     const[history,setHistory]=useState<any[]>([]);
     const [isLoading,setIsLoading]=useState(true);
-    const [error,setError]=useState(null);
-
+    const [error,setError]=useState("");
+    const {makeRequest}=api();
     //组件渲染完后获取历史记录
     useEffect(()=>{
         fetchHistory();
@@ -15,7 +16,17 @@ export function HistoryPanel() {
 
     //获取历史记录
     const fetchHistory=async()=>{
-        setIsLoading(false);
+        setIsLoading(true);
+        setError("");
+
+        try{
+            const data:any=await makeRequest("my-history")
+            setHistory(data.challenges)
+        }catch(error){
+            setError("加载历史记录失败")
+        }finally{
+            setIsLoading(false)
+        }
     }
 
     if (isLoading) {

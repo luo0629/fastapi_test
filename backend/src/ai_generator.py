@@ -3,7 +3,7 @@ import json
 from openai import OpenAI
 from typing import Dict,Any
 
-client=OpenAI(api_key=os.getenv("OPENAI_API_KEY"),base_url="https://api.z.ai/api/paas/v4/")
+client=OpenAI(api_key=os.getenv("OPENAI_API_KEY"),base_url="https://turingai.plus/v1")
 
 #AI生成挑战函数
 def generate_challenge_with_ai(difficulty:str)->Dict[str,Any]:
@@ -26,8 +26,9 @@ def generate_challenge_with_ai(difficulty:str)->Dict[str,Any]:
 
         确保所有选项都看似合理，但其中只有一个选项是明确正确的。"""
     try:
+
         response=client.chat.completions.create(
-            model="glm-4.6",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"生成一个{difficulty} 难度的编程挑战"}
@@ -47,7 +48,6 @@ def generate_challenge_with_ai(difficulty:str)->Dict[str,Any]:
         
         return challenge_data
     except Exception as e:
-        print(e)
         return{
             "title": "关于Python列表操作的题目",
             "options": [

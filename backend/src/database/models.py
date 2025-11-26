@@ -39,12 +39,12 @@ class ChallengeQuota(Base):
     #剩余产生挑战的次数
     quota_remaining=Column(Integer,nullable=False,default=50)
     #最新一次重置的时间
-    last_reasert_date=Column(DateTime,default=datetime.now)
+    last_reset_date=Column(DateTime,default=datetime.now)
 
 #将数据模型创建为对应的数据表
 Base.metadata.create_all(engine)
 # 创建一个会话工厂，用于生成与数据库交互的会话实例
-SessionLocal = sessionmaker(autoflush=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autoflush=False,  bind=engine)
 
 
 # 创建一个数据库会话生成器函数，供依赖注入使用

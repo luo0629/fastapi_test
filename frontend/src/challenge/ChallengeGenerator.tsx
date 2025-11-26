@@ -1,22 +1,66 @@
 import "react";
 import { useState,useEffect } from "react";
 import { MCQChallenge } from "./MCQChallenge";
+import { api } from "../utils/api";
+import type { Challenge } from "../utils/types";
+
+interface QuotaType {
+    id?: number;  // 如果 id 可选，且为数字
+    user_id: string;  // 用户ID，字符串类型
+    quota_remaining: number;  // 剩余挑战次数，数字类型
+    last_reset_date: Date;  // 最近重置的时间，日期类型
+}
+
+
 //用户挑战表单
 export function ChallengeGenerator() {
-    const[challenge,setChallenge]=useState(null);
+    const[challenge,setChallenge]=useState<Challenge | null>(null);
     const[isLoading,setIsLoading]=useState(false);
-    const[error,setError]=useState(null);
+    const[error,setError]=useState<string | null>(null);
     //设置难度
     const[difficulty,setDifficulty]=useState("easy");
+    const{makeRequest}=api();
     
-    const[quota,setQuota]=useState(null);
+    const[quota,setQuota]=useState<QuotaType>();
+
+    useEffect(()=>{
+        fetchQuota();
+    },[])
 
     //获取用户配额
-    const fetchQuota=async()=>{}
+    const fetchQuota=async()=>{
+        try{
+            const data=await makeRequest<QuotaType>("quota");
+            setQuota(data)
+        }catch(err){
+            console.log(err)
+        }
+    }
     //生成挑战
-    const generateChallenge=async()=>{}
+    const generateChallenge=async()=>{
+        setIsLoading(true)
+        setError(null)
+
+        try{
+            const data=await makeRequest<Challenge>("generate-challenge",{
+                method:"POST",
+                body:JSON.stringify({difficulty})
+            })
+            setChallenge(data)
+            fetchQuota()
+        }catch(err:any){
+            setError(err.message||"生成挑战失败")
+        }finally{
+            setIsLoading(false)
+        }
+    }
     //计算下次用户额度重置时间
-    const getNextResetTime=()=>{}
+    const getNextResetTime=()=>{
+        if (!quota?.last_reset_date) return null
+        const resertDate=new Date(quota.last_reset_date)
+        resertDate.setHours(resertDate.getHours()+24)
+        return resertDate
+    }
 
 
     return (
@@ -45,7 +89,7 @@ export function ChallengeGenerator() {
                     {quota?.quota_remaining === 0 && (
                         <div className="text-right">
                             <p className="text-sm font-medium text-orange-600">额度已用完</p>
-                            <p className="text-xs text-slate-500">下次重置：{0}</p>
+                            <p className="text-xs text-slate-500">下次重置：{getNextResetTime()?.toLocaleString()}</p>
                         </div>
                     )}
                 </div>
@@ -80,7 +124,8 @@ export function ChallengeGenerator() {
             <div className="flex justify-center">
                 <button
                     onClick={generateChallenge}
-                    disabled={isLoading || quota?.quota_remaining===0}
+                    // disabled={isLoading || quota?.quota_remaining===0}
+                    disabled={false}
                     className="relative px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/25 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:scale-100 min-w-[200px]"
                 >
                     {isLoading ? (
@@ -119,7 +164,7 @@ export function ChallengeGenerator() {
                       {/* 挑战显示区域 */}
             {challenge && (
                 <div className="border-t border-slate-200 pt-8">
-                    <MAQChallenge challenge={challenge} />
+                    <MCQChallenge challenge={challenge} showExplanation={false} />
                 </div>
             )}
                 </div>

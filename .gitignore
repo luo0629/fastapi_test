@@ -8,3 +8,5 @@ backend/pyproject.toml
 data/ 
 frontend/node_modules
 .claude
+**/__pycache__/
+*.pyc

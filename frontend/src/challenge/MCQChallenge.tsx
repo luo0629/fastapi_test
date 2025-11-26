@@ -1,19 +1,17 @@
 import "react";
 import { useState } from "react";
 import "./MCQChallenge.css";
-
-//JSON数据形式
-// {
-//     content:"",
-//     option:[],
-//     correctAnswer:0,
-//     explanation:""
-// }
+import type { Challenge } from "../utils/types";
 
 
 //多选挑战组件
 //接收挑战数据和是否显示解释作为属性
-export function MCQChallenge({challenge,showExplanation=false}:{challenge:any,showExplanation:boolean}) {
+interface MCQChallengeProps {
+    challenge: Challenge;
+    showExplanation?: boolean;
+}
+
+export function MCQChallenge({challenge,showExplanation=false}:MCQChallengeProps) {
     //记录用户选择的答案
     const [selectedOptions,setSelectedOptions]=useState<null|number>(null);
     //是否显示解释
@@ -64,7 +62,7 @@ export function MCQChallenge({challenge,showExplanation=false}:{challenge:any,sh
             </div>
 
             <div className="options-container">
-                {options.map((option,index)=>(
+                {options.map((option:any,index:any)=>(
                     <div className={getOptionClass(index)} key={index} onClick={()=>handleOptionSelect(index)}>
                         <div className="option-content">
                             <span className="option-marker">{String.fromCharCode(65 + index)}</span>
